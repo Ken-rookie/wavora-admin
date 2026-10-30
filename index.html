@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080817">
+  <title>Wavora Admin — Control Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div id="toast" class="toast" role="status"></div>
+  <section id="authView" class="auth-layout">
+    <div class="auth-art">
+      <div class="brand"><span class="brand-mark">∿</span><span>Wavora</span></div>
+      <div class="auth-message"><span class="eyebrow">CONTROL CENTER</span><h1>Your sound.<br><em>Your platform.</em></h1><p>Manage the catalog, artists, releases, and community from one secure workspace.</p></div>
+      <div class="wave-art"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <small>WAVORA • ADMIN CONSOLE</small>
+    </div>
+    <div class="auth-panel">
+      <form id="loginForm" class="auth-card">
+        <div class="mobile-brand brand"><span class="brand-mark">∿</span><span>Wavora</span></div>
+        <span class="eyebrow">ADMIN ACCESS</span><h2>Welcome back</h2><p class="muted">Sign in with an existing Wavora admin account.</p>
+        <label>Email address<input id="loginEmail" type="email" autocomplete="username" placeholder="admin@yourdomain.com" required></label>
+        <label>Password<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Your password" required></label>
+        <button class="btn primary full" type="submit" id="loginBtn">Sign in <span>→</span></button>
+        <p class="auth-note">Access is restricted to accounts with the <code>admin</code> role in Supabase.</p>
+        <p id="authError" class="error-text" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <div id="appView" class="app-shell hidden">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand sidebar-brand" href="#"><span class="brand-mark">∿</span><span>Wavora<small>ADMIN STUDIO</small></span></a>
+      <div class="nav-caption">WORKSPACE</div>
+      <nav id="mainNav">
+        <button class="nav-item active" data-page="overview"><span>◫</span> Overview</button>
+        <button class="nav-item" data-page="songs"><span>♫</span> Songs & Videos <b id="navSongCount">—</b></button>
+        <button class="nav-item" data-page="artists"><span>♬</span> Artists</button>
+        <button class="nav-item" data-page="albums"><span>▣</span> Albums</button>
+        <button class="nav-item" data-page="purchases"><span>＄</span> Purchases</button>
+        <button class="nav-item" data-page="reports"><span>⚑</span> Reports <b id="navReportCount">—</b></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="secure-note"><span class="secure-icon">◈</span><div><strong>Secure workspace</strong><small>Protected by Supabase RLS</small></div></div>
+        <button id="signOutBtn" class="nav-item signout"><span>↪</span> Sign out</button>
+        <div class="user-mini"><div class="avatar" id="adminAvatar">W</div><div class="user-meta"><strong id="adminName">Admin</strong><small id="adminEmail">—</small></div><span class="admin-pill">ADMIN</span></div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <button id="menuBtn" class="icon-btn mobile-only" aria-label="Open menu">☰</button>
+        <div class="breadcrumbs"><span>Wavora</span><span>/</span><strong id="pageCrumb">Overview</strong></div>
+        <div class="top-actions"><span class="live-indicator"><i></i> LIVE DATA</span><button id="refreshBtn" class="btn subtle">↻ <span>Refresh</span></button><div class="top-avatar" id="topAvatar">W</div></div>
+      </header>
+      <div class="content-wrap">
+        <section id="page-overview" class="page active">
+          <div class="page-heading"><div><span class="eyebrow">YOUR PLATFORM AT A GLANCE</span><h1>Overview<span class="accent-dot">.</span></h1><p>Here's what's happening across your music platform.</p></div><button class="btn primary" data-go="songs">＋ Add a release</button></div>
+          <div id="statsGrid" class="stats-grid">
+            <div class="stat-card skeleton"></div><div class="stat-card skeleton"></div><div class="stat-card skeleton"></div><div class="stat-card skeleton"></div>
+          </div>
+          <div class="dashboard-grid">
+            <section class="panel recent-panel"><div class="panel-head"><div><h3>Recent releases</h3><p>Latest songs added to your catalog</p></div><button class="text-btn" data-go="songs">View catalog →</button></div><div id="recentSongs" class="table-wrap"><div class="empty-state">Loading catalog…</div></div></section>
+            <section class="panel quick-panel"><div class="panel-head"><div><h3>Quick actions</h3><p>Keep your platform moving</p></div></div><div class="quick-actions">
+              <button data-action="new-song"><span class="quick-icon purple">♫</span><span><strong>Add a song</strong><small>Upload audio and artwork</small></span><b>→</b></button>
+              <button data-go="artists"><span class="quick-icon blue">♬</span><span><strong>Manage artists</strong><small>Artist profiles and details</small></span><b>→</b></button>
+              <button data-go="reports"><span class="quick-icon amber">⚑</span><span><strong>Review reports</strong><small>Moderate submitted reports</small></span><b>→</b></button>
+            </div><div class="tip-box"><span>✦</span><div><strong>Release checklist</strong><p>Check artwork, audio path, price, and publish status before making a track live.</p></div></div></section>
+          </div>
+          <section class="panel"><div class="panel-head"><div><h3>Catalog status</h3><p>Publishing overview based on your live database</p></div></div><div id="catalogStatus" class="status-strip"></div></section>
+        </section>
+
+        <section id="page-songs" class="page">
+          <div class="page-heading"><div><span class="eyebrow">CONTENT MANAGEMENT</span><h1>Songs & videos<span class="accent-dot">.</span></h1><p>Create releases, manage media, and control what listeners can access.</p></div><button id="addSongBtn" class="btn primary">＋ Add a release</button></div>
+          <section class="panel"><div class="toolbar"><div class="searchbox"><span>⌕</span><input id="songSearch" placeholder="Search title, genre, artist…"></div><select id="songStatusFilter"><option value="all">All statuses</option><option value="published">Published</option><option value="draft">Drafts</option><option value="featured">Featured</option></select><button id="songReload" class="btn subtle">↻ Refresh</button></div><div id="songsTable" class="table-wrap"></div></section>
+        </section>
+
+        <section id="page-artists" class="page">
+          <div class="page-heading"><div><span class="eyebrow">TALENT DIRECTORY</span><h1>Artists<span class="accent-dot">.</span></h1><p>Maintain artist profiles associated with your releases.</p></div><button id="addArtistBtn" class="btn primary">＋ Add artist</button></div>
+          <section class="panel"><div class="toolbar"><div class="searchbox"><span>⌕</span><input id="artistSearch" placeholder="Search artists…"></div><button id="artistReload" class="btn subtle">↻ Refresh</button></div><div id="artistsTable" class="table-wrap"></div></section>
+        </section>
+
+        <section id="page-albums" class="page">
+          <div class="page-heading"><div><span class="eyebrow">RELEASE COLLECTIONS</span><h1>Albums<span class="accent-dot">.</span></h1><p>Organize songs into albums and EPs.</p></div><button id="addAlbumBtn" class="btn primary">＋ Add album</button></div>
+          <section class="panel"><div class="toolbar"><div class="searchbox"><span>⌕</span><input id="albumSearch" placeholder="Search albums…"></div><button id="albumReload" class="btn subtle">↻ Refresh</button></div><div id="albumsTable" class="table-wrap"></div></section>
+        </section>
+
+        <section id="page-purchases" class="page">
+          <div class="page-heading"><div><span class="eyebrow">COMMERCE</span><h1>Purchases<span class="accent-dot">.</span></h1><p>Inspect purchase records and payment status. This panel does not mark payments as paid.</p></div><button id="purchaseReload" class="btn subtle">↻ Refresh</button></div>
+          <section class="panel"><div class="toolbar"><div class="searchbox"><span>⌕</span><input id="purchaseSearch" placeholder="Search purchase, song, user…"></div><select id="purchaseFilter"><option value="all">All statuses</option><option>pending</option><option>paid</option><option>failed</option><option>refunded</option><option>cancelled</option></select></div><div id="purchasesTable" class="table-wrap"></div></section>
+        </section>
+
+        <section id="page-reports" class="page">
+          <div class="page-heading"><div><span class="eyebrow">TRUST & SAFETY</span><h1>Reports<span class="accent-dot">.</span></h1><p>Review user-submitted content reports and record moderation outcomes.</p></div><button id="reportReload" class="btn subtle">↻ Refresh</button></div>
+          <section class="panel"><div class="toolbar"><div class="searchbox"><span>⌕</span><input id="reportSearch" placeholder="Search reason or details…"></div><select id="reportFilter"><option value="all">All reports</option><option>open</option><option>reviewing</option><option>resolved</option><option>dismissed</option></select></div><div id="reportsTable" class="table-wrap"></div></section>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div id="modalBackdrop" class="modal-backdrop hidden">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head"><div><span class="eyebrow">WAVORA ADMIN</span><h2 id="modalTitle">Create item</h2></div><button id="modalClose" class="icon-btn" aria-label="Close">×</button></div>
+      <form id="entityForm"><div id="modalBody" class="modal-body"></div><div class="modal-footer"><button type="button" id="modalCancel" class="btn subtle">Cancel</button><button class="btn primary" id="modalSubmit" type="submit">Save changes</button></div><p id="modalError" class="error-text"></p></form>
+    </section>
+  </div>
+  <script src="js/config.js"></script><script src="js/app.js"></script>
+</body>
+</html>
